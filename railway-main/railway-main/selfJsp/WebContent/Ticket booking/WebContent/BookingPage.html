@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+#from, #to, #tlist, #clas, #name, #age, #gender {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin-bottom: 15px;
+	font-size: 16px;
+}
+
+#gender {
+	background-color: #fff;
+}
+
+#add, #gett {
+	display: block;
+	margin: 0 auto;
+	padding: 10px 15px;
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background-color 0.3s ease-in-out;
+}
+
+#add:hover {
+	background-color: #0056b3;
+}
+
+label {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+</style>
+</head>
+
+<body>
+	<label>from</label>
+	<select id="from">
+		<option>---</option>
+	</select>
+	<label>to</label>
+	<select id="to">
+		<option>---</option>
+	</select>
+	<button id="gett" onclick="get()">get</button>
+	</br>
+	<label>trains</label>
+	<select id="tlist">
+		<option>---</option>
+	</select>
+	<label>class</label>
+	<select id="clas">
+		<option>---</option>
+		<option>general</option>
+		<option>sleeper</option>
+		<option>ac</option>
+	</select>
+	<label>date:</label>
+	<input type="date" id="dat">
+	</br>
+	<label>name</label>
+	<input type="text" id="name" required>
+	<label>age</label>
+
+	<input type="text" id="age" required>
+	<label>gender</label>
+	<select id="gender" Required>
+		<option></option>
+		<option value="male">Male</option>
+		<option value="female">Female</option>
+		<option value="other">Other</option>
+	</select>
+	<button onclick="addRecord()" id="add">add</button>
+	<div id="tableContainer"></div>
+	<script>
+		let tableVisible = 0;
+
+		function createTable() {
+			const tableContainer = document.getElementById('tableContainer');
+			const table = document.createElement('table');
+			table.setAttribute('id', 'dataTable');
+			const but=document.createElement("button");
+			but.setAttribute('id','butt');
+			but.innerHTML="book";
+			but.addEventListener('click',function(){
+				detailstring();
+			});
+			const headerRow = document.createElement('tr');
+			['Name', 'Age', 'Gender', 'Actions'].forEach((headerText) => {
+				const th = document.createElement('th');
+				th.textContent = headerText;
+				headerRow.appendChild(th);
+			});
+			table.appendChild(headerRow);
+			tableContainer.appendChild(table);
+			tableContainer.appendChild(but);
+		}
+
+		function addRecord() {
+			
+			const nameInput = document.getElementById('name');
+			const ageInput = document.getElementById('age');
+			const genderInput = document.getElementById('gender');
+			
+			const name = nameInput.value;
+			const age = ageInput.value;
+			const gender = genderInput.value;
+			if(name===""||age===""||gender===""){
+				alert("some fields are missing");
+				return false;
+			}
+			else{
+				if (tableVisible == 0) {
+					createTable();
+				}
+				tableVisible++;
+			const table = document.getElementById('dataTable');
+			const row = table.insertRow();
+			const cel1 = row.insertCell();
+			const cel2 = row.insertCell();
+			const cel3 = row.insertCell();
+			const cel4 = row.insertCell();
+			cel1.innerHTML = name;
+			cel2.textContent = age;
+			cel3.textContent = gender;
+			cel4.innerHTML = '<button onclick="deleteRow(this.parentNode.parentNode)">Delete</button>';
+			
+			nameInput.value = '';
+			ageInput.value = '';
+			genderInput.value = '';
+			}
+
+		}
+
+
+		function deleteRow(row) {
+			const table = document.getElementById('dataTable');
+			const but=document.getElementById('butt');
+			table.deleteRow(row.rowIndex);
+			tableVisible--;
+			if (tableVisible == 0){ table.parentNode.removeChild(table); but.parentNode.removeChild(but);}
+		}
+
+		function detailstring(){
+			var details="";
+			var table=document.getElementById("dataTable");
+			for(var i=1;i<table.rows.length;i++){
+				var rr=table.rows[i];
+				for(var j=0;j<rr.cells.length-1;j++){
+					details+="&"+table.rows[0].cells[j].textContent+"=";
+					details += rr.cells[j].textContent ;
+				}
+			}
+			//console.log(details);
+			var traindetails="";
+			var a=document.getElementById("from").value;
+			var b=document.getElementById("to").value;
+			var c=document.getElementById("tlist").value;
+			var d=document.getElementById("clas").value;
+			var e=document.getElementById("dat").value;
+			if(a==="---"||b==="---"||c==="---"||d==="---"||e===""){
+				alert("some fields are missing");
+				return false;
+			}
+				
+			traindetails+="&from="+a+"&to="+b+"&tlist="+c+"&clas="+d+"&dat="+e;
+			//console.log(traindetails);
+			
+			var xhr = new XMLHttpRequest();
+			var base="BookSer?par=1"+traindetails+details;
+			console.log(base);
+			xhr.open("GET", base, true);
+			xhr.onreadystatechange = function () {
+				if (xhr.status === 200 && xhr.readyState === 4) {
+					document.body.innerHTML=xhr.responseText;
+					console.log("success");
+				}
+				}
+			xhr.send();
+		}
+		function to() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "jdbc", true);
+			xhr.onreadystatechange = function () {
+				if (xhr.status === 200 && xhr.readyState === 4) {
+					console.log(xhr.responseText);
+					var x = document.getElementById("from");
+					var y = document.getElementById("to");
+					var lis = JSON.parse(xhr.responseText);
+					for (const aa of lis) {
+						var opt = document.createElement("option");
+						var opt1 = document.createElement("option");
+						opt.textContent = aa.from;
+						opt1.textContent = aa.from;
+						console.log(aa.from);
+						x.appendChild(opt);
+						y.appendChild(opt1);
+					}
+				}
+			}
+			xhr.send();
+		}
+		function get() {
+			var fr = document.getElementById("from").value;
+			var to = document.getElementById("to").value;
+			var base = "TrainSer" + "?par1=" + fr + "&par2=" + to;
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", base, true);
+			xhr.onreadystatechange = function () {
+				if (xhr.status === 200 && xhr.readyState === 4) {
+					console.log(xhr.responseText);
+					var xx = JSON.parse(xhr.responseText);
+					var idd = document.getElementById("tlist");
+					for (const x of xx) {
+						var y = document.createElement("option");
+						y.textContent = x.train;
+						idd.appendChild(y);
+					}
+				}
+			}
+			xhr.send();
+		}
+		window.onload = to;
+	</script>
+</body>
+
+</html>

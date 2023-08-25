@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<form onsubmit="return false">
+<label>username:</label>
+<input type="text" id="username"></br></br>
+<label>password:</label>
+<input type="text" id="password"></br></br>
+<button onclick="login()">login</button></form>
+<script>
+function login(){
+	var a=document.getElementById("username").value;
+	var b=document.getElementById("password").value;
+	var url="LoginServlet?par1="+a+"&par2="+b;
+	var xhr=new XMLHttpRequest();
+	xhr.open("GET",url,true);
+	xhr.onreadystatechange=function(){
+		if(xhr.status===200){
+			console.log("successss");
+			document.body.innerHTML=xhr.responseText;
+		}
+	}
+	xhr.send();
+}
+
+</script>
+
+
+</body>
+</html>
