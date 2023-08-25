@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+</head>
+
+<body>
+	<center>
+
+		<label>empno</label>
+		<input type="text" id="empno"><br><br>
+		<label>ename</label>
+		<input type="text" id="ename"><br><br>
+		<label>job</label>
+		<input type="text" id="job"><br><br>
+		<label>sal</label>
+		<input type="text" id="sal"><br><br>
+		<label>dept</label>
+		<input type="text" id="dept"><br><br><br><br>
+		<button id="first" onclick="first()">first</button>
+		<button id="last" onclick="last()">last</button>
+		<button id="next" onclick="next()">next</button>
+		<button id="prev" onclick="prev()">prev</button>
+		<button id="add" onclick="add()">add</button>
+		<button id="edit" onclick="edit()">edit</button>
+		<button id="save" onclick="save()">save</button>
+		<button id="search" onclick="search()">search</button>
+		<button id="delete" onclick="delete1()">delete</button>
+		<button onclick="clear1()">clear</button>
+
+		<select id="select">
+			<option>---</option>
+			<option id="add">add</option>
+			<option id="edit">edit</option>
+		</select>
+		<script>
+			function clear() {
+				document.getElementById("empno").value = "";
+				document.getElementById("ename").value = "";
+				document.getElementById("job").value = "";
+				document.getElementById("dept").value = "";
+				document.getElementById("sal").value = "";
+
+			}
+			var y = -1;
+			function pref() {
+				const h = new XMLHttpRequest();
+				var url = "Ser";
+				h.open("GET", url, true);
+				h.onreadystatechange = function () {
+					if (h.status === 200 && h.readyState === 4) {
+						console.log(h.responseText);
+
+						var jsonData = JSON.parse(h.responseText);
+
+						localStorage.setItem("my", JSON.stringify(jsonData));
+
+						console.log("Retrieved JSON array stored in local storage.");
+					}
+				}
+				h.send();
+			}
+			window.onload = pref;
+
+
+			function first() {
+				var x = localStorage.getItem("my");
+				var da = JSON.parse(x);
+				y = 0;
+				console.log(da[0]);
+				document.getElementById("empno").value = da[0].num;
+				document.getElementById("ename").value = da[0].name;
+				document.getElementById("job").value = da[0].jo;
+				document.getElementById("sal").value = da[0].sa;
+				document.getElementById("dept").value = da[0].dep;
+			}
+			function next() {
+				var x = localStorage.getItem("my");
+				var da = JSON.parse(x);
+				console.log(da[0]);
+				y = (y + 1) % da.length;
+				document.getElementById("empno").value = da[y].num;
+				document.getElementById("ename").value = da[y].name;
+				document.getElementById("job").value = da[y].jo;
+				document.getElementById("sal").value = da[y].sa;
+				document.getElementById("dept").value = da[y].dep;
+			}
+			function last() {
+				var x = localStorage.getItem("my");
+				var da = JSON.parse(x);
+				console.log(da[0]);
+				y = da.length - 1;
+				document.getElementById("empno").value = da[da.length - 1].num;
+				document.getElementById("ename").value = da[da.length - 1].name;
+				document.getElementById("job").value = da[da.length - 1].jo;
+				document.getElementById("sal").value = da[da.length - 1].sa;
+				document.getElementById("dept").value = da[da.length - 1].dep;
+			}
+			function prev() {
+				var x = localStorage.getItem("my");
+				var da = JSON.parse(x);
+				console.log(da[0]);
+				y = (y - 1) % da.length;
+				if (y < 0) y = y + da.length;
+				document.getElementById("empno").value = da[y].num;
+				document.getElementById("ename").value = da[y].name;
+				document.getElementById("job").value = da[y].jo;
+				document.getElementById("sal").value = da[y].sa;
+				document.getElementById("dept").value = da[y].dep;
+			}
+			function add() {
+				var addref = document.getElementById("select");
+				addref.value = "add";
+			}
+			function edit() {
+				var ad = document.getElementById("select");
+				ad.value = "edit";
+			}
+			function save() {
+				var r = document.getElementById("select");
+				var a = document.getElementById("empno").value;
+				var b = document.getElementById("ename").value;
+				var c = document.getElementById("job").value;
+				var d = document.getElementById("sal").value;
+				var e = document.getElementById("dept").value;
+				if (a === "" || b === "" || c === "" || d === "" || e === "") {
+					alert("some values are missing");
+					return false;
+				}
+
+				
+
+				if (isNaN(d)) {
+					alert("Salary must be a valid number");
+					return false;
+				}
+				if (r.value === "add") {
+					const h = new XMLHttpRequest();
+
+					var url = "/SerAdd?par1=" + a + "&par2=" + b + "&par3=" + c + "&par4=" + d + "&par5=" + e;
+					h.open("GET", url, true);
+					h.onreadystatechange = function () {
+						if (h.status === 200 && h.readyState === 4) {
+							console.log("hii" + h.responseText);
+							var jsonData = JSON.parse(h.responseText);
+
+							localStorage.setItem("my", JSON.stringify(jsonData));
+						}
+					}
+					h.send();
+				}
+				if (r.value === "edit") {
+					const h = new XMLHttpRequest();
+
+					var url = "/Seredit?par1=" + a + "&par2=" + b + "&par3=" + c + "&par4=" + d + "&par5=" + e;
+					h.open("GET", url, true);
+					h.onreadystatechange = function () {
+						if (h.status === 200 && h.readyState === 4) {
+							console.log("hii" + h.responseText);
+							var jsonData = JSON.parse(h.responseText);
+							localStorage.setItem("my", JSON.stringify(jsonData));
+						}
+					}
+					h.send();
+
+				}
+			}
+			function search() {
+			
+				var x = localStorage.getItem("my");
+				var da = JSON.parse(x);
+				
+				
+				for (let i = 0; i < da.length; i++) {
+					console.log(da[i].num);
+					if (document.getElementById("empno").value === da[i].num){
+						console.log("after if");
+				
+						document.getElementById("empno").value = da[i].num;
+						document.getElementById("ename").value = da[i].name;
+						document.getElementById("job").value = da[i].jo;
+						document.getElementById("sal").value = da[i].sa;
+						document.getElementById("dept").value = da[i].dep;
+
+						
+						
+					}
+			
+
+			}
+			}
+			function delete1(){
+				var st=document.getElementById("empno").value;
+				var xhr=new XMLHttpRequest();
+				var url="http://localhost:8080/Empcrud/Serdelete?par1="+st;
+				xhr.open("GET",url,true);
+				console.log(xhr.status);
+				console.log(xhr.readyState);
+				
+				xhr.onreadystatechange=function(){
+					if(xhr.status===200 && xhr.readyState===4 ){
+						console.log("connection established")
+						var jsonData = JSON.parse(xhr.responseText);
+						localStorage.setItem("my", JSON.stringify(jsonData));
+						
+						
+					
+				}
+				};
+				xhr.send();
+				
+			}
+
+
+
+		</script>
+	</center>
+</body>
+
+</html>
