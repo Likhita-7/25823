@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<label>by empno:</label>
+	<input type="text" id="empno">
+	<label>by ename:</label>
+	<input type="text" id="ename">
+	</br>
+	</br>
+	<label>by job:</label>
+	<input type="text" id="job">
+	<label>by from salary:</label>
+	<input type="text" id="fromsal">
+	</br>
+	</br>
+	<label>by to sal:</label>
+	<input type="text" id="tosal">
+	<label>by dept:</label>
+	<input type="text" id="dept">
+	</br>
+	</br>
+	<button onclick="search1()">search</button>
+	</br>
+	</br>
+	<table>
+		<tr>
+			<th>empno</th>
+			<th>ename</th>
+			<th>job</th>
+			<th>sal</th>
+			<th>dept</th>
+		</tr>
+	</table>
+	<script>
+		function search1() {
+			var a = document.getElementById("empno").value;
+			var b = document.getElementById("ename").value;
+			var c = document.getElementById("job").value;
+			var d = document.getElementById("fromsal").value;
+			var e = document.getElementById("tosal").value;
+			var f = document.getElementById("dept").value;
+			var url = ""; // Your variable
+
+			if (a !== "") {
+				url = url + "&a=" + a;
+			}
+			if (b !== "") {
+				url = url + "&b=" + b;
+			}
+			if (c !== "") {
+				url = url + "&c=" + c;
+			}
+			if (d !== "") {
+				url = url + "&d=" + d;
+			}
+			if (e !== "") {
+				url = url + "&e=" + e;
+			}
+			if (f !== "") {
+				url = url + "&f=" + f;
+			}
+			if(url.trim()===""){
+				alert("nothing is entered");
+				return false;
+			}
+			console.log("im here");
+			var xhr=new XMLHttpRequest();
+			xhr.open("GET","Servl?par1=12"+url,true);
+			xhr.onreadystatechange=function(){
+				if(xhr.status===200){
+					console.log("success");
+				}
+			}
+			xhr.send();
+		}
+	</script>
+</body>
+</html>
